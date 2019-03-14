@@ -3,6 +3,8 @@ package rma;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -14,6 +16,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.Pane;
@@ -40,6 +44,9 @@ public class ViewController implements Initializable {
     @FXML
     Pane rmaListPane;
     
+    private final String Menu_RMAList = "RMA List";
+    private final String Menu_Reg = "RMA Bericht";
+    
     private final ObservableList<rmaData> data =
                FXCollections.observableArrayList(
                new rmaData("RMA145353", "35533532", "Frau Kesper", "11.03.2019"),
@@ -50,10 +57,8 @@ public class ViewController implements Initializable {
                new rmaData("RMA127453", "35476574", "Herr Adam", "12.03.2019"),
                new rmaData("RMA123435", "35422343", "Herr Dominik", "14.03.2019"));
             
-    
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
-       TableColumn rmaNumCol = new TableColumn("RMA");
+    public void setTableData(){
+    TableColumn rmaNumCol = new TableColumn("RMA");
        rmaNumCol.setMinWidth(130);
        rmaNumCol.setCellFactory(TextFieldTableCell.forTableColumn());
        rmaNumCol.setCellValueFactory(new PropertyValueFactory<rmaData, String>("rmaNummer"));
@@ -75,6 +80,50 @@ public class ViewController implements Initializable {
        
        rmaTable.getColumns().addAll(rmaNumCol, cridCol, kundeCol, datumCol);
        rmaTable.setItems(data);
+    }
+    
+    private void setMenuData(){
+    TreeItem<String> treeItemRoot1 = new TreeItem<>("Menü");
+    TreeView<String> treeView = new TreeView<>(treeItemRoot1);
+    treeView.setShowRoot(false);
+    
+    TreeItem<String> nodeItemA = new TreeItem<>(Menu_RMAList);
+    TreeItem<String> nodeItemB = new TreeItem<>(Menu_Reg);
+    
+    treeItemRoot1.getChildren().addAll(nodeItemA, nodeItemB);
+    
+    menuPane.getChildren().add(treeView);
+    
+    
+        treeView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener(){
+            public void changed(ObservableValue observable, Object oldValue, Object newValue){
+                TreeItem<String> selectedItem = (TreeItem<String>) newValue;
+                
+                String selectedMenu;
+                selectedMenu = selectedItem.getValue();
+                
+                if (null != selectedMenu){
+                    switch(selectedMenu){
+                        case Menu_RMAList:
+                                rmaListPane.setVisible(true);
+                                rmaRegistPane.setVisible(false);
+                                break;
+                        case Menu_Reg:
+                                rmaListPane.setVisible(false);
+                                rmaRegistPane.setVisible(true);
+                                break;
+                                
+                            }
+                    }
+                }
+        
+        });
+    }
+    
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+       setTableData();
+       setMenuData();
     }    
     
 }
