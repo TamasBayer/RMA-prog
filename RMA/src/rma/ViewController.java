@@ -11,6 +11,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
@@ -29,33 +30,75 @@ import javafx.scene.layout.StackPane;
  */
 public class ViewController implements Initializable {
     
+//<editor-fold defaultstate="collapsed" desc="rmaListPane">
     @FXML
-    TableView rmaTable;
+            TableView rmaTable;
     @FXML
-    Button suchenButton;
+            Button suchenButton;
     @FXML
-    ChoiceBox suchenChoice;
+            ChoiceBox suchenChoice;
     @FXML
-    TextField suchenTextField;
+            TextField suchenTextField;
     @FXML
-    StackPane menuPane;
+            StackPane menuPane;
     @FXML
-    Pane rmaRegistPane;
+            Pane rmaListPane;
+//</editor-fold>
+    
+//<editor-fold defaultstate="collapsed" desc="regListPane">
     @FXML
-    Pane rmaListPane;
+            Pane rmaRegistPane;
+    @FXML
+            TextField gpInput;
+    @FXML
+            TextField rmaInput;
+    @FXML
+            TextField rvInput;
+    @FXML
+            TextField cridInput;
+    @FXML
+            TextField sonsInput;
+    @FXML
+            CheckBox ntCheck;
+    @FXML
+            CheckBox stromCheck;
+    @FXML
+            CheckBox akkuCheck;
+    @FXML
+            CheckBox gdataCheck;
+    @FXML
+            CheckBox bullCheck;
+    @FXML
+            CheckBox acroCheck;
+    @FXML
+            CheckBox dockCheck;
+    @FXML
+            CheckBox tastaCheck;
+    @FXML
+            CheckBox mausCheck;
+    @FXML
+            CheckBox vgaCheck;
+    @FXML
+            CheckBox dviCheck;
+    @FXML
+            CheckBox tascheCheck;
+    @FXML
+            Button angelifertButton;
+//</editor-fold>
+    
     
     private final String Menu_RMAList = "RMA List";
     private final String Menu_Reg = "RMA Bericht";
+    DB db = new DB();
     
-    private final ObservableList<rmaData> data =
-               FXCollections.observableArrayList(
-               new rmaData("RMA145353", "35533532", "Frau Kesper", "11.03.2019"),
-               new rmaData("RMA124322", "35425321", "Herr Thomas", "01.03.2019"),        
-               new rmaData("RMA123452", "35422744", "Herr Dits", "23.02.2019"),        
-               new rmaData("RMA123634", "35424587", "Frau Deutsch", "03.03.2019"),        
-               new rmaData("RMA123252", "35422215", "Frau Klar", "26.02.2019"),        
-               new rmaData("RMA127453", "35476574", "Herr Adam", "12.03.2019"),
-               new rmaData("RMA123435", "35422343", "Herr Dominik", "14.03.2019"));
+    private final ObservableList<rmaData> data = FXCollections.observableArrayList();
+//               new rmaData("RMA145353", "35533532", "Frau Kesper", "11.03.2019"),
+//               new rmaData("RMA124322", "35425321", "Herr Thomas", "01.03.2019"),        
+//               new rmaData("RMA123452", "35422744", "Herr Dits", "23.02.2019"),        
+//               new rmaData("RMA123634", "35424587", "Frau Deutsch", "03.03.2019"),        
+//              new rmaData("RMA123252", "35422215", "Frau Klar", "26.02.2019"),        
+//               new rmaData("RMA127453", "35476574", "Herr Adam", "12.03.2019"),
+//               new rmaData("RMA123435", "35422343", "Herr Dominik", "14.03.2019"));
             
     public void setTableData(){
     TableColumn rmaNumCol = new TableColumn("RMA");
@@ -79,7 +122,9 @@ public class ViewController implements Initializable {
        datumCol.setCellValueFactory(new PropertyValueFactory<rmaData, String>("datum"));
        
        rmaTable.getColumns().addAll(rmaNumCol, cridCol, kundeCol, datumCol);
+       data.addAll(db.getAllRMA());
        rmaTable.setItems(data);
+
     }
     
     private void setMenuData(){
@@ -124,6 +169,7 @@ public class ViewController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
        setTableData();
        setMenuData();
+
     }    
     
 }
