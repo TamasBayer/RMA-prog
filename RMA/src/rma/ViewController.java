@@ -1,12 +1,14 @@
-
 package rma;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.function.Predicate;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -86,9 +88,24 @@ public class ViewController implements Initializable {
             Button angelifertButton;
 //</editor-fold>
     
+//<editor-fold defaultstate="collapsed" desc="Angelifert">
+    @FXML
+            Pane angelifertPane;
+    @FXML
+            TableView angelifertTableView;
+    @FXML
+            ChoiceBox angelifertSuchenChoiceBox;
+    @FXML
+            TextField angelifertSuchenTextField;
+    @FXML
+            Button angelifertSuchenButton;
+    
+//</editor-fold>
+    
     
     private final String Menu_RMAList = "RMA List";
     private final String Menu_Reg = "RMA Bericht";
+    private final String Menu_Angelifert = "Angelifert";
     DB db = new DB();
     
     private final ObservableList<rmaData> data = FXCollections.observableArrayList();
@@ -134,8 +151,9 @@ public class ViewController implements Initializable {
     
     TreeItem<String> nodeItemA = new TreeItem<>(Menu_RMAList);
     TreeItem<String> nodeItemB = new TreeItem<>(Menu_Reg);
+    TreeItem<String> nodeItemC = new TreeItem<>(Menu_Angelifert);
     
-    treeItemRoot1.getChildren().addAll(nodeItemA, nodeItemB);
+    treeItemRoot1.getChildren().addAll(nodeItemA, nodeItemB, nodeItemC);
     
     menuPane.getChildren().add(treeView);
     
@@ -152,23 +170,95 @@ public class ViewController implements Initializable {
                         case Menu_RMAList:
                                 rmaListPane.setVisible(true);
                                 rmaRegistPane.setVisible(false);
+                                angelifertPane.setVisible(false);
                                 break;
                         case Menu_Reg:
                                 rmaListPane.setVisible(false);
                                 rmaRegistPane.setVisible(true);
+                                angelifertPane.setVisible(false);
                                 break;
-                                
+                        case Menu_Angelifert:
+                                rmaListPane.setVisible(false);
+                                rmaRegistPane.setVisible(false);
+                                angelifertPane.setVisible(true);
                             }
                     }
                 }
         
         });
     }
+    @FXML
+            private void suchen(){
+                FilteredList<rmaData> sRMAData = new FilteredList(data, e -> true);
+                suchenChoice.getItems().addAll("RMA Nr.", "CRID Nr.", "Kunde", "Datum");
+                suchenChoice.setValue("RMA Nr.");
+                
+                suchenTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+                
+                    sRMAData.setPredicate((Predicate<? super rmaData>) (rmaData rmaData)->{
+               
+                    if(newValue.isEmpty() || newValue==null){
+                        return true;
+                    } else if ((suchenChoice.getValue() == "RMA Nr.") && rmaData.getRmaNummer().contains(newValue)){
+                        return true;
+                    } else if ((suchenChoice.getValue() == "CRID Nr.") && rmaData.getCridNummer().contains(newValue)){
+                        return true;
+                    } else if ((suchenChoice.getValue() == "Kunde") && rmaData.getKunde().contains(newValue)){
+                        return true;
+                    } else if ((suchenChoice.getValue() == "Datum") && rmaData.getDatum().contains(newValue)){
+                        return true;
+                    } 
+                    
+                    return false;
+                        });
+                });
+                
+
+                SortedList sort = new SortedList(sRMAData);
+                sort.comparatorProperty().bind(rmaTable.comparatorProperty());
+                rmaTable.setItems(sort);
+                
+          
+                        }
+ //            private final ObservableList<rmaData> angelifertData = FXCollections.observableArrayList();
+            
+             
+            
+            private void setAngelifertTable(){
+       TableColumn angermaNumCol = new TableColumn("RMA");
+       angermaNumCol.setMinWidth(130);
+       angermaNumCol.setCellFactory(TextFieldTableCell.forTableColumn());
+       angermaNumCol.setCellValueFactory(new PropertyValueFactory<rmaData, String>("rmaNummer"));
+       
+       TableColumn angecridCol = new TableColumn("Crid");
+       angecridCol.setMinWidth(140);
+       angecridCol.setCellFactory(TextFieldTableCell.forTableColumn());
+       angecridCol.setCellValueFactory(new PropertyValueFactory<rmaData, String>("cridNummer"));
+       
+       TableColumn angekundeCol = new TableColumn("Kunde");
+       angekundeCol.setMinWidth(140);
+       angekundeCol.setCellFactory(TextFieldTableCell.forTableColumn());
+       angekundeCol.setCellValueFactory(new PropertyValueFactory<rmaData, String>("kunde"));
+       
+       TableColumn angedatumCol = new TableColumn("Datum");
+       angedatumCol.setMinWidth(100);
+       angedatumCol.setCellFactory(TextFieldTableCell.forTableColumn());
+       angedatumCol.setCellValueFactory(new PropertyValueFactory<rmaData, String>("datum"));
+       
+        angelifertTableView.getColumns().addAll(angermaNumCol, angecridCol, angekundeCol, angedatumCol);
+        
+        
+        
+            }
+            
+
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
        setTableData();
        setMenuData();
+       suchen();
+       setAngelifertTable();
 
     }    
     

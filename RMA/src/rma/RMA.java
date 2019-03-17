@@ -1,4 +1,3 @@
-
 package rma;
 
 import javafx.application.Application;
